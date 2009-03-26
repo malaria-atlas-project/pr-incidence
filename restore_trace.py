@@ -2,6 +2,8 @@
 from pylab import *
 from numpy import *
 from all_data import *
+from tables import *
+from generic_model import *
 
 pr_type='model_exp'
 # pr_type = 'mixed'

@@ -174,7 +174,7 @@ def make_plots(cols, dbname, continent, recs, pr_type, nyr = 1):
     # pl.legend(loc=2)
     pl.axis([0,lims[0],0,2500])
     
-    pl.savefig('../figs/Figures/%s_post.png'%model_id)
+    pl.savefig('figs/%s_post.png'%model_id)
     
     pl.figure()
     Nsamps = len(cols.r)
@@ -201,7 +201,7 @@ def make_plots(cols, dbname, continent, recs, pr_type, nyr = 1):
     
     pl.axis([0,lims[0],0,2500])
     
-    pl.savefig('../figs/Figures/%s_pred.png'%model_id)
+    pl.savefig('figs/%s_pred.png'%model_id)
     
     # Pdb(color_scheme='Linux').set_trace()
     # if hasattr(recs.lat, 'mask'):
@@ -212,7 +212,7 @@ def make_plots(cols, dbname, continent, recs, pr_type, nyr = 1):
     # lon = recs.lon[where_lonlat]
     mean_dev = np.mean(cols.AR_dev[:], axis=0)#[where_lonlat]
     devs = np.rec.fromarrays([mean_dev, recs.lon, recs.lat], names=('mean_deviance','longitude','latitude'))
-    pl.rec2csv(devs, '../figs/%s_deviance.csv'%model_id)
+    pl.rec2csv(devs, 'figs/%s_deviance.csv'%model_id)
     # pl.close('all')
     return envs_post, envs_pred
     
