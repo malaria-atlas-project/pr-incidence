@@ -220,11 +220,9 @@ def make_plots(cols, dbname, continent, recs, pr_type, nyr = 1):
 
 if __name__ == '__main__':
     # AR low up PR
-    os.chdir('..')
     from pylab import *
     from numpy import *
     from all_data import *
-    os.chdir('generic_analysis')
 
     pr_type='model_exp'
     # pr_type = 'mixed'
