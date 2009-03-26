@@ -35,3 +35,18 @@ ar_data = this_R.cases/this_R.pyor
 # where_rescale = np.where((R.pcd.data!='Y') * (R.surv_int.data>7) + (R.surv_int.data<7))
 # ar_data[where_rescale]*=this_R.surv_int[where_rescale]/7.
 ar_data*=time_scaling(R.pcd, R.surv_int)
+
+def filtered_data(pr_type, continent, R=R):
+    if pr_type=='data':
+        where_good = np.where(1-np.isnan(R.pr))
+        this_R = R[where_good]
+    elif pr_type=='data_untrans':
+        where_good = np.where((1-np.isnan(R.pfpr))*(R.pfpr>0))
+        this_R = R[where_good]
+    else:
+        this_R = R
+    
+    if not continent=='All':
+        where_good = np.where(this_R['region']==continent)        
+    
+    return this_R[where_good]
