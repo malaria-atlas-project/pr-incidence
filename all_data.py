@@ -5,7 +5,7 @@ import pylab as pl
 # =================
 # = Emelda's data =
 # =================
-R = pl.csv2rec('all_data.csv')
+R = pl.csv2rec('datafiles/all_data.csv')
 # R = pl.csv2rec('all_data.csv')
 missing_fields = np.zeros(len(R))
 for n in ['surv_int', 'pyor', 'cases', 'region', 'lat', 'lon']:

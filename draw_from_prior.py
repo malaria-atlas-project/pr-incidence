@@ -2,12 +2,9 @@ from generic_model import make_model, model_salad, xplot
 from pymc import *
 from pylab import *
 from numpy import *
-
-os.chdir('..')
 from pylab import *
 from numpy import *
 from all_data import *
-os.chdir('generic_analysis')
 
 pr_type='model_exp'
 # pr_type = 'mixed'
