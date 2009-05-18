@@ -11,13 +11,13 @@ pr_type='model_exp'
 scale = .6
 # pr_type = 'data'
 
-continent = 'Africa+'
-# continent = 'CSE Asia and Americas'
-# continent = 'CSE Asia'
-# continent = 'America'
-# continent = 'All'
+# continent = 'Africa+'
+this_R = R_af
 
-this_R = filtered_data(pr_type, continent)
+continent = 'CSE Asia and Americas'
+this_R = R_am_as
+
+
 
 dbname = continent.replace(' ','_')+'_scale_'+str(scale)+'_'+pr_type
 

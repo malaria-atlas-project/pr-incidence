@@ -135,7 +135,7 @@ def exp_model():
     """
     Exponential model
     """
-    asymp = pm.Uniform('asymp',0,1,value=.2)
+    asymp = pm.Uniform('asymp',0,100  q,value=.2)
     rate = pm.Uniform('rate',.1,100,value=44)
     fun_params = [asymp, rate]
     

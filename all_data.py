@@ -23,6 +23,7 @@ R.pfpr /= 100
 R_af = R[np.where(R.region=='Africa+')]
 R_am = R[np.where(R.region=='America')]
 R_as = R[np.where(R.region=='CSE Asia')]
+R_am_as = R[np.where((R.region == 'America') + (R.region == 'CSE ASia'))]
 
 def time_scaling(pcd, surv_int):
     out = np.ones(len(pcd))
