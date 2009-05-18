@@ -14,6 +14,8 @@ class BurdenPredictor(object):
       - pop : A population surface, represented as a vector.
       - nyr : Integer, number of years to predict for.
     """
+    
+    
     def __init__(self, hf_name, pop, nyr=1, burn=0):
         hf = openFile(hf_name)
         cols = hf.root.chain0.PyMCsamples.cols
@@ -21,6 +23,9 @@ class BurdenPredictor(object):
         n = len(cols)
         self.pop = pop
         self.nyr = nyr
+        
+        self.where_nonzero = np.where(self.pop > 0)
+        self.pop_where_pos = self.pop[self.where_nonzero]
         
         self.r_int = cols.r_int[burn:]
         self.r_lin = cols.r_lin[burn:]
@@ -37,13 +42,20 @@ class BurdenPredictor(object):
         """
         if pr.shape != self.pop.shape:
             raise ValueError, 'PR input has shape %s, but the population input had shape %s.'%(pr.shape, self.pop.shape)
+            
+        pr_where_pos = pr[self.where_nonzero]
+        out = np.empty(pr.shape)
+        
         i = np.random.randint(self.n)
-        mu = self.f[i](pr)
-        r = (self.r_int[i] + self.r_lin[i] * pr + self.r_quad[i] * pr**2)*self.nyr
+        mu = self.f[i](pr_where_pos)
+        r = (self.r_int[i] + self.r_lin[i] * pr_where_pos + self.r_quad[i] * pr_where_pos**2)*self.nyr
         
-        rate = pm.rgamma(beta=r/mu, alpha=r) * self.pop
+        rate = pm.rgamma(beta=r/mu, alpha=r) * self.pop_where_pos
         
-        return pm.rpoisson(rate)
+        burden = pm.rpoisson(rate)
+        out[self.where_nonzero] = burden
+        
+        return out
         
         
 if __name__ == '__main__':
@@ -51,10 +63,12 @@ if __name__ == '__main__':
     from pylab import *
 
     N=10000
-    pop=10000
+    pop=10000*np.ones(N)
     nyr = 10
+    
+    pop[::10] = 0
 
-    p = BurdenPredictor('traces/Africa+_scale_0.6_model_exp.hdf5', np.ones(N)*pop, nyr, 0)
+    p = BurdenPredictor('traces/Africa+_scale_0.6_model_exp.hdf5', pop, nyr, 0)
     pr_max = .6
     # p = BurdenPredictor('traces/CSE_Asia_and_Americas_scale_0.6_model_exp.hdf5', np.ones(N)*pop, nyr)
     # pr_max = .5
