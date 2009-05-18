@@ -14,7 +14,7 @@ class BurdenPredictor(object):
       - pop : A population surface, represented as a vector.
       - nyr : Integer, number of years to predict for.
     """
-    def __init__(self, hf_name, burn, pop, nyr=1):
+    def __init__(self, hf_name, pop, nyr=1, burn=0):
         hf = openFile(hf_name)
         cols = hf.root.chain0.PyMCsamples.cols
         
@@ -54,7 +54,7 @@ if __name__ == '__main__':
     pop=10000
     nyr = 10
 
-    p = BurdenPredictor('traces/Africa+_scale_0.6_model_exp.hdf5', 100, np.ones(N)*pop, nyr)
+    p = BurdenPredictor('traces/Africa+_scale_0.6_model_exp.hdf5', np.ones(N)*pop, nyr, 0)
     pr_max = .6
     # p = BurdenPredictor('traces/CSE_Asia_and_Americas_scale_0.6_model_exp.hdf5', np.ones(N)*pop, nyr)
     # pr_max = .5
