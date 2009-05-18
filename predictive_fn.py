@@ -14,17 +14,19 @@ class BurdenPredictor(object):
       - pop : A population surface, represented as a vector.
       - nyr : Integer, number of years to predict for.
     """
-    def __init__(self, hf_name, pop, nyr=1):
+    def __init__(self, hf_name, burn, pop, nyr=1):
         hf = openFile(hf_name)
         cols = hf.root.chain0.PyMCsamples.cols
-        self.n = len(cols)
+        
+        n = len(cols)
         self.pop = pop
         self.nyr = nyr
         
-        self.r_int = cols.r_int[:]
-        self.r_lin = cols.r_lin[:]
-        self.r_quad = cols.r_quad[:]
-        self.f = [interp1d(xplot_aug, np.concatenate(([0],f)), 'linear') for f in cols.fplot]
+        self.r_int = cols.r_int[burn:]
+        self.r_lin = cols.r_lin[burn:]
+        self.r_quad = cols.r_quad[burn:]
+        self.f = [interp1d(xplot_aug, np.concatenate(([0],cols.fplot[i])), 'linear') for i in xrange(burn,n)]
+        self.n = len(self.r_int)
         
         hf.close()
         
@@ -52,7 +54,7 @@ if __name__ == '__main__':
     pop=10000
     nyr = 10
 
-    p = BurdenPredictor('traces/Africa+_scale_0.6_model_exp.hdf5', np.ones(N)*pop, nyr)
+    p = BurdenPredictor('traces/Africa+_scale_0.6_model_exp.hdf5', 100, np.ones(N)*pop, nyr)
     pr_max = .6
     # p = BurdenPredictor('traces/CSE_Asia_and_Americas_scale_0.6_model_exp.hdf5', np.ones(N)*pop, nyr)
     # pr_max = .5
