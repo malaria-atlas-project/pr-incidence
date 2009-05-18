@@ -4,12 +4,6 @@ import pymc as pm
 from scipy.interpolate import UnivariateSpline, PiecewisePolynomial, interp1d
 from tables import openFile
 
-def time_scaling(pcd, surv_int):
-    out = np.ones(len(pcd))
-    where_rescale = np.where((pcd!='Y') * (surv_int>7) + (surv_int<7))
-    out[where_rescale] = surv_int[where_rescale]/7.
-    return out
-
 xplot = np.linspace(0.001,1,100)
 xplot_aug = np.concatenate(([0],xplot))
 
