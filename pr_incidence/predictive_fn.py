@@ -1,7 +1,7 @@
 from __future__ import division
 import numpy as np
 import pymc as pm
-from scipy.interpolate import UnivariateSpline, PiecewisePolynomial, interp1d
+from scipy.interpolate import interp1d
 from tables import openFile
 
 
