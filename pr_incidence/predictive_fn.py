@@ -4,8 +4,10 @@ import pymc as pm
 from scipy.interpolate import UnivariateSpline, PiecewisePolynomial, interp1d
 from tables import openFile
 
+
 xplot = np.linspace(0.001,1,100)
 xplot_aug = np.concatenate(([0],xplot))
+
 
 class BurdenPredictor(object):
     """
