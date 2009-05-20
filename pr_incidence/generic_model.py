@@ -133,6 +133,7 @@ def make_plots_from_model(M, continent):
 def make_plots(cols, dbname, continent, recs, pr_type, nyr = 1):
     
     samp_size=1000
+    print continent
 
     if continent.find('Africa') >= 0:
         lims = [.8,2.5]                
@@ -167,14 +168,14 @@ def make_plots(cols, dbname, continent, recs, pr_type, nyr = 1):
     # ar_data = recs.cases/recs.pyor/np.minimum(1,7./recs.surv_int)
     ar_data = recs.cases/recs.pyor*time_scale_fac
     # print ar_data.min()*samp_size, ar_data.max()*samp_size
-    ar_in =  ar_data[np.where((pr<.25) * (pr > .10))]*samp_size
-    print ar_in.min(), ar_in.max()
+    # ar_in =  ar_data[np.where((pr<.25) * (pr > .10))]*samp_size
+    # print ar_in.min(), ar_in.max()
     pl.plot(pr, ar_data*samp_size, 'r.', label='data')
     # pl.title(continent)
     # pl.legend(loc=2)
     pl.axis([0,lims[0],0,2500])
     
-    pl.savefig('figs/%s_post.png'%model_id)
+    pl.savefig('../figs/%s_post.png'%model_id)
     
     pl.figure()
     Nsamps = len(cols.r)
@@ -201,7 +202,7 @@ def make_plots(cols, dbname, continent, recs, pr_type, nyr = 1):
     
     pl.axis([0,lims[0],0,2500])
     
-    pl.savefig('figs/%s_pred.png'%model_id)
+    pl.savefig('../figs/%s_pred.png'%model_id)
     
     # Pdb(color_scheme='Linux').set_trace()
     # if hasattr(recs.lat, 'mask'):
@@ -212,7 +213,7 @@ def make_plots(cols, dbname, continent, recs, pr_type, nyr = 1):
     # lon = recs.lon[where_lonlat]
     mean_dev = np.mean(cols.AR_dev[:], axis=0)#[where_lonlat]
     devs = np.rec.fromarrays([mean_dev, recs.lon, recs.lat], names=('mean_deviance','longitude','latitude'))
-    pl.rec2csv(devs, 'figs/%s_deviance.csv'%model_id)
+    pl.rec2csv(devs, '../figs/%s_deviance.csv'%model_id)
     # pl.close('all')
     return envs_post, envs_pred
     

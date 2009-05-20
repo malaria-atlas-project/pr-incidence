@@ -26,8 +26,6 @@ class BurdenPredictor(object):
         self.pop = pop
         self.nyr = nyr
         
-        self.where_nonzero = np.where(self.pop > 0)
-        self.pop_where_pos = self.pop[self.where_nonzero]
         
         self.r_int = cols.r_int[burn:]
         self.r_lin = cols.r_lin[burn:]
@@ -44,18 +42,19 @@ class BurdenPredictor(object):
         """
         if pr.shape != self.pop.shape:
             raise ValueError, 'PR input has shape %s, but the population input had shape %s.'%(pr.shape, self.pop.shape)
-            
-        pr_where_pos = pr[self.where_nonzero]
+        
+        where_pos = np.where(pr > 0)    
+        pr_where_pos = pr[where_pos]
         out = np.empty(pr.shape)
         
         i = np.random.randint(self.n)
         mu = self.f[i](pr_where_pos)
         r = (self.r_int[i] + self.r_lin[i] * pr_where_pos + self.r_quad[i] * pr_where_pos**2)*self.nyr
         
-        rate = pm.rgamma(beta=r/mu, alpha=r) * self.pop_where_pos
+        rate = pm.rgamma(beta=r/mu, alpha=r) * self.pop[where_pos]
         
         burden = pm.rpoisson(rate)
-        out[self.where_nonzero] = burden
+        out[where_pos] = burden
         
         return out
         

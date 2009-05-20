@@ -11,17 +11,17 @@ pr_type='model_exp'
 scale = .6
 # pr_type = 'data'
 
-# continent = 'Africa+'
+continent = 'Africa+'
 this_R = R_af
 
-continent = 'CSE Asia and Americas'
-this_R = R_am_as
+# continent = 'CSE Asia and Americas'
+# this_R = R_am_as
 
 
 
 dbname = continent.replace(' ','_')+'_scale_'+str(scale)+'_'+pr_type
 
-os.chdir('traces')
+os.chdir('../traces')
 for i in xrange(500000):
     try:    
         # M = pm.MCMC(make_model(this_R, curve_sub = model_salad.polynomial_model, curve_params=[4]), db='hdf52', name='blah')
