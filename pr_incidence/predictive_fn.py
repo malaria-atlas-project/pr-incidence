@@ -27,10 +27,10 @@ class BurdenPredictor(object):
         self.nyr = nyr
         
         
-        self.r_int = cols.r_int[burn:]
-        self.r_lin = cols.r_lin[burn:]
-        self.r_quad = cols.r_quad[burn:]
-        self.f = [interp1d(xplot_aug, np.concatenate(([0],cols.fplot[i])), 'linear') for i in xrange(burn,n)]
+        self.r_int = cols.r_int[burn::10]
+        self.r_lin = cols.r_lin[burn::10]
+        self.r_quad = cols.r_quad[burn::10]
+        self.f = [interp1d(xplot_aug, np.concatenate(([0],cols.fplot[i])), 'linear') for i in xrange(burn,n,10)]
         self.n = len(self.r_int)
         
         hf.close()
