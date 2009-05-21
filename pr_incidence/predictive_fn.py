@@ -36,18 +36,18 @@ class BurdenPredictor(object):
         hf.close()
         
         
-    def __call__(self, pr):
+    def __call__(self, pr, pop_pr_res):
         """
         Expects a pr array. Should be of same shape as the pop array that was received as input.
         """
-        if pr.shape != self.pop.shape:
+        if pr.shape != self.pop[::pop_pr_res,::pop_pr_res].shape:
             raise ValueError, 'PR input has shape %s, but the population input had shape %s.'%(pr.shape, self.pop.shape)
         
         where_pos = np.where(pr > 0)
         if len(where_pos[0])==0:
             return pr*0
         pr_where_pos = pr[where_pos]
-        out = np.empty(pr.shape)
+        out = np.zeros((pr.shape[0]*pop_pr_res, pr.shape[1]*pop_pr_res))
         
         i = np.random.randint(self.n)
         mu = self.f[i](pr_where_pos)
@@ -55,8 +55,8 @@ class BurdenPredictor(object):
         
         rate = pm.rgamma(beta=r/mu, alpha=r) * self.pop[where_pos]
         
-        burden = pm.rpoisson(rate)
-        out[where_pos] = burden
+        for j in where_pos[0]:
+            out[:pop_pr_res, j*pop_pr_res:(j+1)*pop_pr_res] = np.random.poisson(rate[j],size=pop_pr_res*pop_pr_res).reshape((pop_pr_res,pop_pr_res))
         
         return out
         
