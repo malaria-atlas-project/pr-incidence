@@ -42,12 +42,13 @@ class BurdenPredictor(object):
         """
         if pr.shape != self.pop[::pop_pr_res,::pop_pr_res].shape:
             raise ValueError, 'PR input has shape %s, but the population input had shape %s.'%(pr.shape, self.pop.shape)
-        
+
+        out = np.zeros((pr.shape[0]*pop_pr_res, pr.shape[1]*pop_pr_res))        
         where_pos = np.where(pr > 0)
         if len(where_pos[0])==0:
-            return pr*0
+            return out
         pr_where_pos = pr[where_pos]
-        out = np.zeros((pr.shape[0]*pop_pr_res, pr.shape[1]*pop_pr_res))
+
         
         i = np.random.randint(self.n)
         mu = self.f[i](pr_where_pos)
