@@ -18,12 +18,11 @@ class BurdenPredictor(object):
     """
     
     
-    def __init__(self, hf_name, pop, nyr=1, burn=0):
+    def __init__(self, hf_name, nyr=1, burn=0):
         hf = openFile(hf_name)
         cols = hf.root.chain0.PyMCsamples.cols
         
         n = len(cols)
-        self.pop = pop
         self.nyr = nyr
         
         
@@ -36,12 +35,12 @@ class BurdenPredictor(object):
         hf.close()
         
         
-    def __call__(self, pr, pop_pr_res):
+    def __call__(self, pr, pop, pop_pr_res):
         """
         Expects a pr array. Should be of same shape as the pop array that was received as input.
         """
-        if pr.shape != self.pop[::pop_pr_res,::pop_pr_res].shape:
-            raise ValueError, 'PR input has shape %s, but the population input had shape %s.'%(pr.shape, self.pop.shape)
+        if pr.shape != pop[::pop_pr_res,::pop_pr_res].shape:
+            raise ValueError, 'PR input has shape %s, but the population input had shape %s.'%(pr.shape, pop.shape)
 
         out = np.zeros((pr.shape[0]*pop_pr_res, pr.shape[1]*pop_pr_res))        
         where_pos = np.where(pr > 0)
@@ -54,7 +53,7 @@ class BurdenPredictor(object):
         mu = self.f[i](pr_where_pos)
         r = (self.r_int[i] + self.r_lin[i] * pr_where_pos + self.r_quad[i] * pr_where_pos**2)*self.nyr
         
-        rate = pm.rgamma(beta=r/mu, alpha=r) * self.pop[where_pos]
+        rate = pm.rgamma(beta=r/mu, alpha=r) * pop[where_pos]
         
         for j in where_pos[0]:
             out[:pop_pr_res, j*pop_pr_res:(j+1)*pop_pr_res] = np.random.poisson(rate[j],size=pop_pr_res*pop_pr_res).reshape((pop_pr_res,pop_pr_res))
