@@ -41,7 +41,7 @@ class BurdenPredictor(object):
         """
 
         #if len(pr.shape)>0:
-        if len(pr.shape)>0:
+        if len(pr.shape)>1:
             raise ValueError, 'PR is supposed to be 1d, dumbass.'
 
         #if pr.shape != (0,pop[::pop_pr_res].shape[1]):
