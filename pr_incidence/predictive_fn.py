@@ -59,7 +59,7 @@ class BurdenPredictor(object):
         mu = self.f[i](pr_where_pos)
         r = (self.r_int[i] + self.r_lin[i] * pr_where_pos + self.r_quad[i] * pr_where_pos**2)*self.nyr
         
-        rate = pm.rgamma(beta=r/mu, alpha=r) #* pop[where_pos]
+        rate = np.atleast_1d(pm.rgamma(beta=r/mu, alpha=r)) #* pop[where_pos]
         
         for l in xrange(0,len(where_pos[0])):
             j=where_pos[0][l]
