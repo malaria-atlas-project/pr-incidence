@@ -39,9 +39,9 @@ class BurdenPredictor(object):
         """
         Expects a pr array. Should be of same shape as the pop array that was received as input.
         """
-        if pr.shape != pop[::pop_pr_res,::pop_pr_res].shape:
+        if pr.shape != (0,pop[::pop_pr_res].shape[1]):
             raise ValueError, 'PR input has shape %s, but the population input had shape %s.'%(pr.shape, pop.shape)
-        if len(pr.shape>0):
+        if len(pr.shape)>0:
             raise ValueError, 'PR is supposed to be 1d, dumbass.'
 
         out = np.zeros((pop_pr_res,pr.shape[0]*pop_pr_res))
