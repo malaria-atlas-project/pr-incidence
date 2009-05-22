@@ -52,7 +52,7 @@ class BurdenPredictor(object):
         where_pos = np.where(pr > 0)
         if len(where_pos[0])==0:
             return out
-        pr_where_pos = pr[where_pos]
+        pr_where_pos = np.atleast_1d(pr[where_pos])
 
         
         i = np.random.randint(self.n)
