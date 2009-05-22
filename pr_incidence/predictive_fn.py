@@ -41,8 +41,10 @@ class BurdenPredictor(object):
         """
         if pr.shape != pop[::pop_pr_res,::pop_pr_res].shape:
             raise ValueError, 'PR input has shape %s, but the population input had shape %s.'%(pr.shape, pop.shape)
+        if len(pr.shape>0):
+            raise ValueError, 'PR is supposed to be 1d, dumbass.'
 
-        out = np.zeros((pr.shape[0]*pop_pr_res, pr.shape[1]*pop_pr_res))        
+        out = np.zeros((pop_pr_res,pr.shape[0]*pop_pr_res))
         where_pos = np.where(pr > 0)
         if len(where_pos[0])==0:
             return out
@@ -55,9 +57,8 @@ class BurdenPredictor(object):
         
         rate = pm.rgamma(beta=r/mu, alpha=r) * pop[where_pos]
         
-        for j,k in zip(*where_pos):
-            out[k*pop_pr_res:(k+1)*pop_pr_res, j*pop_pr_res:(j+1)*pop_pr_res] \
-                = np.random.poisson(rate[j,k],size=pop_pr_res*pop_pr_res).reshape((pop_pr_res,pop_pr_res))
+        for j in where_pos[0]:
+            out[:,j*pop_pr_res:(j+1)*pop_pr_res] = np.random.poisson(rate[j],size=(pop_pr_res,pop_pr_res))
         
         return out
         
