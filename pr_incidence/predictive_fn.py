@@ -61,8 +61,9 @@ class BurdenPredictor(object):
         
         rate = pm.rgamma(beta=r/mu, alpha=r) #* pop[where_pos]
         
-        for j in where_pos[0]:
-            out[:,j*pop_pr_res:(j+1)*pop_pr_res] = np.random.poisson(rate[j]*pop[:,j*pop_pr_res:(j+1)*pop_pr_res],size=(pop_pr_res,pop_pr_res))
+        for l in xrange(0,len(where_pos[0])):
+            j=where_pos[0][l]
+            out[:,j*pop_pr_res:(j+1)*pop_pr_res] = np.random.poisson(rate[l]*pop[:,j*pop_pr_res:(j+1)*pop_pr_res],size=(pop_pr_res,pop_pr_res))
         
         return out
         
