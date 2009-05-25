@@ -48,25 +48,56 @@ class BurdenPredictor(object):
         if pr.shape[0]!=np.shape(pop[:,::pop_pr_res])[1]:
             raise ValueError, 'PR input has shape %s, but the population input had shape %s.'%(pr.shape, pop.shape)
 
-        out = np.zeros((pop_pr_res,pr.shape[0]*pop_pr_res))
-        where_pos = np.where(pr > 0)
-        if len(where_pos[0])==0:
-            return out
-        pr_where_pos = np.atleast_1d(pr[where_pos])
+        # define blank 11km 2-d array to house burden
+        burden_1km = np.zeros((pop_pr_res,pr.shape[0]*pop_pr_res))
 
+        # extract vector of pr at 5km only wherre pr is non-zero - if all zero then return blank template        
+        where_pr_pos_5km = np.where(pr > 0)
+        if sum(where_pr_pos_5km)==0:
+            return burden_1km
+        pr_where_pr_pos_5km = np.atleast_1d(pr[where_pr_pos_5km])
         
+        # initialise 5km zero 1-d array for rate
+        rate_5km = np.zeros(np.product(np.shape(pr))).reshape(np.shape(pr))
+        
+        # calculate rate for non-zero PR pixels
         i = np.random.randint(self.n)
-        mu = self.f[i](pr_where_pos)
-        r = (self.r_int[i] + self.r_lin[i] * pr_where_pos + self.r_quad[i] * pr_where_pos**2)*self.nyr
+        mu = self.f[i](pr_where_pr_pos_5km)
+        r = (self.r_int[i] + self.r_lin[i] * pr_where_pr_pos_5km + self.r_quad[i] * pr_where_pr_pos_5km**2)*self.nyr
+        rate_where_pr_pos_5km = np.atleast_1d(pm.rgamma(beta=r/mu, alpha=r))
         
-        rate = np.atleast_1d(pm.rgamma(beta=r/mu, alpha=r)) #* pop[where_pos]
+        # re-map thse rate values onto full length 5km rate vector
+        rate_5km[where_pr_pos_5km]=rate_where_pr_pos_5km
         
-        for l in xrange(0,len(where_pos[0])):
-            j=where_pos[0][l]
-            out[:,j*pop_pr_res:(j+1)*pop_pr_res] = np.random.poisson(rate[l]*pop[:,j*pop_pr_res:(j+1)*pop_pr_res],size=(pop_pr_res,pop_pr_res))
+        # blow-up 5km rate vector to match 1km pop 2-d array
+        temp1 = np.atleast_2d(np.arange(0,len(pr))) 
+        temp2 = np.repeat(temp1,pop_pr_res,axis=0)
+        temp3 = np.repeat(temp2,pop_pr_res,axis=1)
+        rate_1km=rate_5km[temp3]
+
+        if(np.shape(pop)!=np.shape(rate_1km)):
+            raise ValueError, '1km rate array has shape %s, but the 1km population array has shape %s.'%(np.shape(rate_1km),np.shape(pop))
+        
+        # multiply 1km rate by 1km pop array 
+        popRate = rate_1km*pop
+        
+        # extract non-zero pixels (now also excludes zero Pop as well as zero rate), and return all zeroes if no non-zero pixels
+        where_popRate_pos = np.where(popRate > 0)
+        if sum(where_popRate_pos)==0:
+            return burden_1km 
+        popRate_where_popRate_pos = popRate[where_popRate_pos]
+                    
+        # carry out poisson draws to define burden in these non-zero pixels
+        burden_where_popRate_pos = np.random.poisson(popRate_where_popRate_pos)
+
+        # re-map burden values to full 1km 2-d burden array
+        burden_1km[where_popRate_pos] = burden_where_popRate_pos
+        
+        #for l in xrange(0,len(where_pos[0])):
+        #    j=where_pos[0][l]
+        #    out[:,j*pop_pr_res:(j+1)*pop_pr_res] = np.random.poisson(rate[l]*pop[:,j*pop_pr_res:(j+1)*pop_pr_res],size=(pop_pr_res,pop_pr_res))
         
         return out
-        
         
 if __name__ == '__main__':
     from tables import openFile
