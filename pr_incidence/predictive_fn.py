@@ -97,7 +97,7 @@ class BurdenPredictor(object):
         #    j=where_pos[0][l]
         #    out[:,j*pop_pr_res:(j+1)*pop_pr_res] = np.random.poisson(rate[l]*pop[:,j*pop_pr_res:(j+1)*pop_pr_res],size=(pop_pr_res,pop_pr_res))
         
-        return out
+        return burden_1km
         
 if __name__ == '__main__':
     from tables import openFile
