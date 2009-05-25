@@ -53,7 +53,7 @@ class BurdenPredictor(object):
 
         # extract vector of pr at 5km only wherre pr is non-zero - if all zero then return blank template        
         where_pr_pos_5km = np.where(pr > 0)
-        if sum(where_pr_pos_5km)==0:
+        if np.sum(where_pr_pos_5km)==0:
             return burden_1km
         pr_where_pr_pos_5km = np.atleast_1d(pr[where_pr_pos_5km])
         
@@ -83,7 +83,7 @@ class BurdenPredictor(object):
         
         # extract non-zero pixels (now also excludes zero Pop as well as zero rate), and return all zeroes if no non-zero pixels
         where_popRate_pos = np.where(popRate > 0)
-        if sum(where_popRate_pos)==0:
+        if np.sum(where_popRate_pos)==0:
             return burden_1km 
         popRate_where_popRate_pos = popRate[where_popRate_pos]
                     
