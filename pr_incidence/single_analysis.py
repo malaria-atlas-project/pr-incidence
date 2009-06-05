@@ -1,6 +1,6 @@
 # AR low up PR
-from generic_model import *
 from pylab import *
+from generic_model import *
 from numpy import *
 from all_data import *
 import os
@@ -11,11 +11,11 @@ pr_type='model_exp'
 scale = .6
 # pr_type = 'data'
 
-continent = 'Africa+'
-this_R = R_af
+# continent = 'Africa+'
+# this_R = R_af
 
-# continent = 'CSE Asia and Americas'
-# this_R = R_am_as
+continent = 'CSE Asia and Americas'
+this_R = R_am_as
 
 
 
@@ -28,9 +28,9 @@ for i in xrange(500000):
         # M = pm.MCMC(make_model(this_R, curve_sub = model_salad.nonparametric_model, curve_params=[model_salad.exp_model]), db='hdf52', name=continent+'_extra')
         # M = pm.MCMC(make_model(this_R, curve_sub = model_salad.delta_one_spliner, curve_params=[model_salad.exp_model, 1, scale], 
         #         pr_type=pr_type), db='hdf5', name=dbname)
-        # M = pm.MCMC(make_model(this_R, curve_sub = model_salad.exp_plus_line_model, curve_params=[], pr_type=pr_type), db='hdf5', name=dbname)
+        # M = pm.MCMC(make_model(this_R, curve_sub = model_salad.exp_model, curve_params=[], pr_type=pr_type), db='hdf5', name=dbname)
         M = pm.MCMC(make_model(this_R, curve_sub = model_salad.delta_one_spliner, curve_params=[model_salad.exp_model, 1, scale], 
-                pr_type=pr_type), db='hdf5', name=dbname)            
+                pr_type=pr_type), db='hdf5', name=dbname)
                 
             
         nonpr_stochastics = []
@@ -49,26 +49,26 @@ for i in xrange(500000):
         a,b,c = sys.exc_info()
         print b
         pass
-os.chdir('..')
-clf()
-for i in xrange(10):
-    OK = False
-    while not OK:
-        # M.m_params['asymp'].rand()
-        M.m_params['rate'].rand()
-        M.f_on_mesh.rand()
-        try:
-            M.check_trend.logp
-            OK = True
-        except pm.ZeroProbability:
-            pass
-    plot(xplot, M.fplot.value*1000)
-    axis([0,.8,0,2500])
+# os.chdir('..')
+# clf()
+# for i in xrange(10):
+#     OK = False
+#     while not OK:
+#         # M.m_params['asymp'].rand()
+#         M.m_params['rate'].rand()
+#         M.f_on_mesh.rand()
+#         try:
+#             M.check_trend.logp
+#             OK = True
+#         except pm.ZeroProbability:
+#             pass
+#     plot(xplot, M.fplot.value*1000)
+#     axis([0,.8,0,2500])
 if i==99:
     raise ValueError, 'Failed to create model'
-pl.close('all')
+# pl.close('all')
 # M.isample(3000000,100000,100)
 M.isample(10000000,200000,10000)
-# # M.isample(50000,10000,100)
+# M.isample(50000,10000,100)
 # make_plots(M, continent)
 
