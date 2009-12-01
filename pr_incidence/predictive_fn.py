@@ -133,6 +133,7 @@ class BurdenPredictor(object):
 
         #if pr.shape != (0,pop[::pop_pr_res].shape[1]):
         if pr.shape!=pop.shape:
+        #if pr.shape[0]!=np.shape(pop[:,::1])[1]:
             raise ValueError, 'PR input has shape %s, but the population input had shape %s.'%(pr.shape, pop.shape)
 
         # define blank 5km 2-d array to house burden
