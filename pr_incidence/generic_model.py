@@ -70,13 +70,14 @@ def make_model(recs, curve_sub, curve_params=[], pr_type='mixed', pr_hists = Non
     
     @pm.potential
     def check_trend(AR = AR_trend, f=fplot):
+
         if np.any(AR<=0) or np.any(f<=0):
             return -np.Inf
         if check_inflec:
             d2 = np.diff(f,2)
             d2=d2[np.where(np.abs(d2)>1e-6)]
             chgs = np.where(np.abs(np.diff(np.sign(d2)))>1)[0]
-            if np.diff(f[-3:],2) >= 0 or len(chgs) > 1:
+            if np.diff(f[-3:],2) > 0 or len(chgs) > 1:
                 return -np.Inf
         return 0
 
@@ -123,10 +124,27 @@ def make_model(recs, curve_sub, curve_params=[], pr_type='mixed', pr_hists = Non
     out.update(input_dict)
     return out
 
-def make_plots_from_model(M, continent):
+def get_lastchain(hr):
+    maxv = 0
+    for ch in hr._f_listNodes():
+        if ch._v_name.find('chain')>-1:
+            cur = int(ch._v_name.replace('chain',''))
+            maxv = max(cur, maxv)
+    return getattr(hr, 'chain'+str(maxv))
+
+def make_plots_from_hf(fname, continent, recs, pr_type, nyr=1, chain=-1):
+    hf = openFile(fname)
+    dbname = os.path.splitext(os.path.basename(fname))[0]
+    ch = get_lastchain(hf.root)
+    cols = ch.PyMCsamples.cols
+    make_plots(cols, dbname, continent, recs, pr_type)
+
+
+def make_plots_from_model(M, continent, chain=-1):
     recs = M.recs
-    dbname = M.db.filename
-    cols = M.db._h5file.root.chain0.PyMCsamples.cols
+    dbname = M.db._h5file.filename
+    ch = get_lastchain(M.db._h5file.root)    
+    cols = ch.PyMCsamples.cols
     pr_type = M.pr_type
     make_plots(cols, dbname, continent, recs, pr_type)
 
@@ -177,6 +195,10 @@ def make_plots(cols, dbname, continent, recs, pr_type, nyr = 1):
     
     pl.savefig('../figs/%s_post.png'%model_id)
     
+    # pl.figure()
+    # pl.plot(xplot, cols.fplot[:].T*samp_size)
+    # pl.plot(pr, ar_data*samp_size, 'r.', label='data')    
+    
     pl.figure()
     Nsamps = len(cols.r)
     AR_pred = np.empty((Nsamps*100, len(xplot)))
@@ -212,8 +234,8 @@ def make_plots(cols, dbname, continent, recs, pr_type, nyr = 1):
     # lat = recs.lat[where_lonlat]
     # lon = recs.lon[where_lonlat]
     mean_dev = np.mean(cols.AR_dev[:], axis=0)#[where_lonlat]
-    devs = np.rec.fromarrays([mean_dev, recs.lon, recs.lat], names=('mean_deviance','longitude','latitude'))
-    pl.rec2csv(devs, '../figs/%s_deviance.csv'%model_id)
+    # devs = np.rec.fromarrays([mean_dev, recs.lon, recs.lat], names=('mean_deviance','longitude','latitude'))
+    # pl.rec2csv(devs, '../figs/%s_deviance.csv'%model_id)
     # pl.close('all')
     return envs_post, envs_pred
     

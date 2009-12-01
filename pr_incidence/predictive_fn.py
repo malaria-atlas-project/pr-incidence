@@ -8,6 +8,33 @@ from tables import openFile
 xplot = np.linspace(0.001,1,100)
 xplot_aug = np.concatenate(([0],xplot))
 
+class MeanIncidencePredictor(object):
+    """
+    Generates a callable object that converts PR to burden.
+      - cols : cols attribute of a PyTables table containing the MCMC trace.
+      - pop : A population surface, represented as a vector.
+      - nyr : Integer, number of years to predict for.
+    """
+    
+    
+    def __init__(self, hf_name, burn=0):
+        hf = openFile(hf_name)
+        cols = hf.root.chain0.PyMCsamples.cols
+        
+        n = len(cols)
+                
+        self.fs = np.array([np.concatenate(([0],cols.fplot[i])) for i in xrange(burn,n,10)])
+        self.f = interp1d(xplot_aug, np.mean(self.fs, axis=0), 'linear')
+        
+        hf.close()
+        
+    def __call__(self, pr):
+        """
+        Expects a pr array. Should be of same shape as the pop array that was received as input.
+        """
+        out = pr.copy()
+        out.data[np.where(True-pr.mask)] = self.f(pr.data[np.where(True-pr.mask)])
+        return out
 
 class BurdenPredictor(object):
     """
