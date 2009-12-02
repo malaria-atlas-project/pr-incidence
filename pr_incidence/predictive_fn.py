@@ -131,6 +131,10 @@ class BurdenPredictor(object):
         Expects a pr array in 5km and pop array in 5km
         """
 
+        # loose any trailing dimensioanilty
+        pr=np.squeeze(pr)
+        pop=np.squeeze(pop)      
+
         #if pr.shape != (0,pop[::pop_pr_res].shape[1]):
         if pr.shape!=pop.shape:
         #if pr.shape[0]!=np.shape(pop[:,::1])[1]:
@@ -156,7 +160,7 @@ class BurdenPredictor(object):
         
         # re-map thse rate values onto full length 5km rate vector
         rate_5km[where_pr_pos_5km]=rate_where_pr_pos_5km
-        
+
         if(np.shape(pop)!=np.shape(rate_5km)):
             raise ValueError, '1km rate array has shape %s, but the 1km population array has shape %s.'%(np.shape(rate_5km),np.shape(pop))
         
